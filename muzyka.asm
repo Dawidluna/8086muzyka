@@ -7,6 +7,11 @@ start:	mov	ax,_data
 	mov	ss,ax
 	mov	sp,offset top
         
+; Format pliku: częstotliwosc czas
+; jedna linia - jedna nuta
+; pauza - częstotliwość równa 0
+; czas - 16 to ok 1s
+
 
     lea dx, nazwaPliku   
     mov ah, 3dh         ; otwarcie pliku
@@ -55,8 +60,10 @@ czytajZnak:
     ret
 
 grajNute:
+    cmp czestotliwosc, 1
+    jng pauza
     mov al, 182         
-    out 43h, al         
+    out 43h, al
     mov ax, osc2
     mov dx, osc1
     div czestotliwosc   ; AX = DX:AX / czestotliwosc   
@@ -66,6 +73,7 @@ grajNute:
     in  al, 61h         ; odczyt stanu głośnika
     or  al, 00000011b   ; podłączenie głośnika do timera 2
     out 61h, al         ; włączamy głosńik
+pauza:
     mov	cx, czas		; długość nuty (16 - około 1s)	
 	mov	ah, 86h	    ; czekaj przez określony w cx czas
 	int	15h	
@@ -85,12 +93,6 @@ brak_pliku:
 blad_otwierania:
     mov ah, 09h
     lea dx, tekst_blad_otwierania
-    int 21h
-    jmp koniec
-
-blad_odczytu:
-    mov ah, 09h
-    lea dx, tekst_blad_odczytu
     int 21h
     jmp koniec
 
