@@ -95,13 +95,13 @@ grajNute:
     or  al, 00000011b   ; ustawiamy ostatnie 2 bity na 1, aby włączyć głośnik
     out 61h, al         ; włączamy głosńik
 pauza:
-    mov	cx, czas		; długość nuty (16 - około 1s)
+    mov cx, czas		; długość nuty (16 - około 1s)
     mov dx, 0	
-    mov	ah, 86h	    ; czekaj przez określony w cx:dx czas w mikrosekundach
-    int	15h	
-    in 	al, 61h
-    and	al, 11111100b	; wyłączenie głośnika
-    out	61h, al
+    mov ah, 86h	    ; czekaj przez określony w cx:dx czas w mikrosekundach
+    int 15h	
+    in  al, 61h
+    and al, 11111100b	; wyłączenie głośnika
+    out 61h, al
     mov czestotliwosc, 0
     mov czas, 0
     jmp czytajNute
@@ -119,9 +119,9 @@ blad_otwierania:
     jmp koniec
 
 koniec:	
-	mov	ah,4ch
-	mov	al,0
-	int	21h
+	mov ah,4ch
+	mov al,0
+	int 21h
 _code ends
 
 _data segment
