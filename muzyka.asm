@@ -83,7 +83,7 @@ czytajZnak PROC
  czytajZnak ENDP
 
 grajNute:
-    cmp czestotliwosc, 1
+    cmp czestotliwosc, 0
     jng pauza
     mov al, 182         
     out 43h, al
