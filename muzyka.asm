@@ -12,8 +12,28 @@ start:	mov	ax,_data
 ; pauza - częstotliwość równa 0
 ; czas - 16 to ok 1s
 
-
-    lea dx, nazwaPliku   
+    mov ah, 62h
+    int 21h             ; pobranie adresu PSP do bx
+    mov es, bx
+    mov bx, 80h         
+    mov al, es:[bx]     ; pobranie długości argumentów w bajtach do al
+    cmp al, 0
+    jne jest_plik
+    jmp brak_pliku
+jest_plik:
+    xor cx, cx
+    mov cl, al
+    mov bx, 82h         ; adres pierwszego bajtu nazwy pliku
+    dec cx
+    lea si, nazwaPliku  ; do si adres zmiennej nazwaPliku
+wczytaj_nazwe:
+    xor ax, ax
+    mov al, es:[bx]		
+	mov [si],ax		
+	inc si			
+	inc bx			
+    loop wczytaj_nazwe
+    lea dx, nazwaPliku
     mov ah, 3dh         ; otwarcie pliku
     mov al, 0           ; tryb odczytu
     int 21h
@@ -28,6 +48,7 @@ czytajNute:
     cmp al, ' '             ; sprawdź, czy spacja (koniec odczytywania częstotliwości)
     je czytajCzas
     sub al, '0'
+    mov cl, al
     mov ax, czestotliwosc
     mul mnoz_10
     add ax, cx
@@ -42,6 +63,7 @@ czytajCzas:
     cmp al, 0ah             ; sprawdź, czy koniec linii (LF)
     je grajNute
     sub al, '0'
+    mov cl, al
     mov ax, czas
     mul mnoz_10
     add ax, cx
@@ -49,7 +71,7 @@ czytajCzas:
     jmp czytajCzas
 
 
-czytajZnak:
+czytajZnak PROC
     mov ah, 3Fh
     mov cx, 1           ; liczba bajtów do odczytu
     mov bx, uchwytPliku
@@ -58,6 +80,7 @@ czytajZnak:
     cmp ax, 0           ; sprawdzenie, czy koniec pliku
     je koniec
     ret
+ czytajZnak ENDP
 
 grajNute:
     cmp czestotliwosc, 1
@@ -105,8 +128,7 @@ _code ends
 _data segment
 	tekst_brak_pliku db "Nie podano nazwy pliku!$"
     tekst_blad_otwierania db "Blad otwierania pliku!$"
-    tekst_blad_odczytu db "Blad odczytu z pliku!$"
-    nazwaPliku db "przyklad.txt"
+    nazwaPliku db 64 dup (0)
     uchwytPliku dw ?
     char db ?
     czestotliwosc dw 0
