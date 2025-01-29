@@ -71,7 +71,7 @@ grajNute:
     mov al, ah          ; wyższy bajt częstotliwości
     out 42h, al               
     in  al, 61h         ; odczyt stanu głośnika
-    or  al, 00000011b   ; podłączenie głośnika do timera 2
+    or  al, 00000011b   ; ustawiamy ostatnie 2 bity na 1, aby włączyć głośnik
     out 61h, al         ; włączamy głosńik
 pauza:
     mov	cx, czas		; długość nuty (16 - około 1s)	
