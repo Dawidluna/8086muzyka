@@ -17,21 +17,21 @@ start:	mov	ax,_data
     mov es, bx
     mov bx, 80h         
     mov al, es:[bx]     ; pobranie długości argumentów w bajtach do al
-    cmp al, 0
+    cmp al, 0           ; sprawdzenie, czy jest podana nazwa pliku
     jne jest_plik
     jmp brak_pliku
 jest_plik:
     xor cx, cx
-    mov cl, al
+    mov cl, al          ; długość nazwy pliku do cl
     mov bx, 82h         ; adres pierwszego bajtu nazwy pliku
     dec cx
     lea si, nazwaPliku  ; do si adres zmiennej nazwaPliku
 wczytaj_nazwe:
     xor ax, ax
-    mov al, es:[bx]		
-	mov [si],ax		
-	inc si			
-	inc bx			
+    mov al, es:[bx]		; znak nazwy pliku do al
+    mov [si],ax		    ; dodajemy znak do zmiennej nazwaPliku
+    inc si		    	; inkrementujemy adres zmiennej
+    inc bx			    ; inkrementujemy adres z którego pobieramy nazwę pliku
     loop wczytaj_nazwe
     lea dx, nazwaPliku
     mov ah, 3dh         ; otwarcie pliku
@@ -85,8 +85,6 @@ czytajZnak PROC
 grajNute:
     cmp czestotliwosc, 0
     jng pauza
-    mov al, 182         
-    out 43h, al
     mov ax, osc2
     mov dx, osc1
     div czestotliwosc   ; AX = DX:AX / czestotliwosc   
@@ -97,12 +95,13 @@ grajNute:
     or  al, 00000011b   ; ustawiamy ostatnie 2 bity na 1, aby włączyć głośnik
     out 61h, al         ; włączamy głosńik
 pauza:
-    mov	cx, czas		; długość nuty (16 - około 1s)	
-	mov	ah, 86h	    ; czekaj przez określony w cx czas
-	int	15h	
+    mov	cx, czas		; długość nuty (16 - około 1s)
+    mov dx, 0	
+    mov	ah, 86h	    ; czekaj przez określony w cx:dx czas w mikrosekundach
+    int	15h	
     in 	al, 61h
-	and	al, 11111100b	; wyłączenie głośnika
-	out	61h, al
+    and	al, 11111100b	; wyłączenie głośnika
+    out	61h, al
     mov czestotliwosc, 0
     mov czas, 0
     jmp czytajNute
