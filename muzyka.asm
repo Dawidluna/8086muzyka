@@ -85,6 +85,8 @@ czytajZnak PROC
 grajNute:
     cmp czestotliwosc, 0
     jng pauza
+    mov al, 182         
+    out 43h, al         ; ustawienie trybu 3 i timera 2
     mov ax, osc2
     mov dx, osc1
     div czestotliwosc   ; AX = DX:AX / czestotliwosc   
